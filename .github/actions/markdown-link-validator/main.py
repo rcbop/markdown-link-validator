@@ -3,11 +3,13 @@ This script checks all markdown files in the repository,
 it exits with a non-zero status code if it's unable to parse the markdown files
 or if it finds any broken links.
 """
+import json
 import os
 from urllib.parse import urlparse
 
 import markdown
 import requests
+import http
 from bs4 import BeautifulSoup
 
 
@@ -47,6 +49,28 @@ def write_to_step_summary(content: str):
             f.write(content)
 
 
+def post_comment_to_pr(token: str, repo: str, pr_number: int, content: str):
+    """
+    Post a comment on a pull request.
+    documentation reference:
+    - https://docs.github.com/en/rest/issues/comments?apiVersion=2022-11-28
+    """
+    url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
+    headers = {
+        'Authorization': f'token {token}',
+        'Accept': 'Accept: application/vnd.github+json'
+    }
+    data = {
+        'body': content
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    if response.status_code == http.HTTPStatus.CREATED:
+        print("Comment posted successfully.")
+    else:
+        print(
+            f"Failed to post comment: {response.status_code} - {response.text}")
+
+
 def validate_link(url: str) -> bool:
     """
     Validate if the given URL is reachable. Skip URLs with non-HTTP schemes.
@@ -56,7 +80,7 @@ def validate_link(url: str) -> bool:
         return True
     try:
         response = requests.head(url, allow_redirects=True, timeout=5)
-        return response.status_code == 200
+        return response.status_code == http.HTTPStatus.OK
     except requests.RequestException:
         return False
 
@@ -86,6 +110,7 @@ def main():
         try:
             with open(file, 'r', encoding='utf-8') as f:
                 markdown_content = f.read()
+                # https://python-markdown.github.io/reference/#the-basics
                 html_content = markdown.markdown(markdown_content)
 
             broken_links = check_links_in_html(html_content, file)
@@ -102,6 +127,21 @@ def main():
 
         markdown_table = generate_markdown_table(broken_links_report)
         write_to_step_summary(f"## Broken Links Report\n{markdown_table}")
+
+        # fully-formed ref of the branch or tag
+        github_ref = os.getenv('GITHUB_REF')
+        print(f"DEBUG: GITHUB_REF is {github_ref}")
+        gh_ref_slc = github_ref.split('/')
+
+        # if the ref is a pull request, the last element is the PR number
+        pr_number = gh_ref_slc[-1] if gh_ref_slc[1] == 'pull' else None
+        if pr_number and pr_number.isdigit():
+            repo = os.getenv('GITHUB_REPOSITORY')
+            token = os.getenv('GITHUB_TOKEN')
+            comment_content = "## Markdown link validator action\n" \
+                f"### Broken Links Found\n{markdown_table}"
+            post_comment_to_pr(token, repo, int(pr_number), comment_content)
+
         exit(1)
     else:
         print("No broken links found!")
