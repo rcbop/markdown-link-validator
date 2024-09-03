@@ -2,7 +2,7 @@
 
 This GitHub custom action, written in Python, allows users to validate the contents of a Markdown file in their repository during a pull request. It verifies the links within the file to ensure they are still working.
 
-This action focus on accuracy and reliability, sacrificing speed for the sake of thoroughness. Instead of using regex it uses markdown parsing libraries to ensure that the links are valid. This avoid edge cases where a regex approach could struggle where links are not formatted as expected e.g: nested links, etc.
+This action focus on accuracy and reliability, sacrificing speed for the sake of thoroughness. Instead of using regex it uses markdown parsing libraries to ensure that the links are valid. This avoid edge cases where a regex approach could struggle where links are not formatted as expected.
 
 ## Usage
 

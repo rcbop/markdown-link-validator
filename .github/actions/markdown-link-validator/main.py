@@ -4,6 +4,7 @@ it exits with a non-zero status code if it's unable to parse the markdown files
 or if it finds any broken links.
 """
 import os
+from urllib.parse import urlparse
 
 import markdown
 import requests
@@ -24,8 +25,11 @@ def list_markdown_files(root_directory: str = '.') -> list:
 
 def validate_link(url: str) -> bool:
     """
-    Validate if the given URL is reachable.
+    Validate if the given URL is reachable. Skip URLs with non-HTTP schemes.
     """
+    parsed_url = urlparse(url)
+    if parsed_url.scheme not in ('http', 'https'):
+        return True
     try:
         response = requests.head(url, allow_redirects=True, timeout=5)
         return response.status_code == 200
