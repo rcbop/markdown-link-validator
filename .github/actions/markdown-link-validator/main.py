@@ -23,6 +23,30 @@ def list_markdown_files(root_directory: str = '.') -> list:
     return markdown_files
 
 
+def generate_markdown_table(broken_links_report: list) -> str:
+    """
+    Generate a markdown table of broken links.
+    """
+    if not broken_links_report:
+        return ""
+
+    table = "| File | Broken URL |\n"
+    table += "|------|------------|\n"
+    for file_path, url in broken_links_report:
+        table += f"| {file_path} | {url} |\n"
+    return table
+
+
+def write_to_step_summary(content: str):
+    """
+    Write content to the GitHub Actions step summary.
+    """
+    summary_file = os.getenv('GITHUB_STEP_SUMMARY')
+    if summary_file:
+        with open(summary_file, 'a') as f:
+            f.write(content)
+
+
 def validate_link(url: str) -> bool:
     """
     Validate if the given URL is reachable. Skip URLs with non-HTTP schemes.
@@ -75,9 +99,14 @@ def main():
         print("Broken links found:")
         for file_path, url in broken_links_report:
             print(f"File: {file_path} | Broken URL: {url}")
+
+        markdown_table = generate_markdown_table(broken_links_report)
+        write_to_step_summary(f"## Broken Links Report\n{markdown_table}")
         exit(1)
     else:
         print("No broken links found!")
+
+        write_to_step_summary("## Broken Links Report\nNo broken links found!")
 
 
 if __name__ == "__main__":
