@@ -12,26 +12,27 @@ To use the markdown-link-validator action, follow these steps:
 2. Add the following code to the `markdown-link-validator.yml` file:
 
 ```yaml
-name: Markdown Validator
+name: Validate Markdown Links
 
 on:
-    pull_request:
-        types:
-            - opened
-            - synchronize
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
-    validate:
-        runs-on: ubuntu-latest
+  link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-        steps:
-            - name: Checkout repository
-                uses: actions/checkout@v2
-
-            - name: Validate Markdown
-                uses: rcbop/markdown-link-validator-action@v1
+      - name: Run Markdown Link Validator
+        uses: rcbop/markdown-link-validator-action@v1
 ```
 
 3. Commit and push the changes to your repository.
 
-Now, whenever a pull request is opened or synchronized, the markdown-link-validator action will be triggered. It will validate the contents of the Markdown file and check the links for any errors.
+Now, whenever a pull request is opened or synchronized, the markdown-link-validator action will be triggered. It will validate the contents of the Markdown file and check the links for any errors. A comment will be added to the pull request with the results of the validation.
