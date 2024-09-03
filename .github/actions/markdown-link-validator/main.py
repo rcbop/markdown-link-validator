@@ -134,7 +134,8 @@ def main():
         gh_ref_slc = github_ref.split('/')
 
         # if the ref is a pull request, the last element is the PR number
-        pr_number = gh_ref_slc[-1] if gh_ref_slc[1] == 'pull' else None
+        pr_number = gh_ref_slc[-2] if gh_ref_slc[1] == 'pull' else None
+        print(f"DEBUG: PR number is {pr_number}")
         if pr_number and pr_number.isdigit():
             repo = os.getenv('GITHUB_REPOSITORY')
             token = os.getenv('GITHUB_TOKEN')
