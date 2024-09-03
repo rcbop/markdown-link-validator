@@ -1,0 +1,13 @@
+name: Validate Markdown Links
+
+on: [push, pull_request]
+
+jobs:
+  link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Markdown Link Validator
+        uses: ./.github/actions/markdown-link-validator

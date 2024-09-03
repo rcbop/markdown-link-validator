@@ -1,0 +1,80 @@
+"""
+This script checks all markdown files in the repository,
+it exits with a non-zero status code if it's unable to parse the markdown files
+or if it finds any broken links.
+"""
+import os
+
+import markdown
+import requests
+from bs4 import BeautifulSoup
+
+
+def list_markdown_files(root_directory: str = '.') -> list:
+    """
+    List all markdown files in the given directory and its subdirectories.
+    """
+    markdown_files = []
+    for root, _, files in os.walk(root_directory):
+        for file in files:
+            if file.endswith(".md"):
+                markdown_files.append(os.path.join(root, file))
+    return markdown_files
+
+
+def validate_link(url: str) -> bool:
+    """
+    Validate if the given URL is reachable.
+    """
+    try:
+        response = requests.head(url, allow_redirects=True, timeout=5)
+        return response.status_code == 200
+    except requests.RequestException:
+        return False
+
+
+def check_links_in_html(html_content: str, file_path: str) -> list:
+    """
+    Parse the HTML content, find all links, and check if they are valid.
+    Returns a list of broken links with the corresponding file path.
+    """
+    broken_links = []
+    soup = BeautifulSoup(html_content, 'html.parser')
+    links = soup.find_all('a', href=True)
+
+    for link in links:
+        url = link['href']
+        if not validate_link(url):
+            broken_links.append((file_path, url))
+
+    return broken_links
+
+
+def main():
+    broken_links_report = []
+    markdown_files = list_markdown_files()
+
+    for file in markdown_files:
+        try:
+            with open(file, 'r', encoding='utf-8') as f:
+                markdown_content = f.read()
+                html_content = markdown.markdown(markdown_content)
+
+            broken_links = check_links_in_html(html_content, file)
+            broken_links_report.extend(broken_links)
+
+        except Exception as e:
+            print(f"Error processing file {file}: {e}")
+            exit(1)
+
+    if broken_links_report:
+        print("Broken links found:")
+        for file_path, url in broken_links_report:
+            print(f"File: {file_path} | Broken URL: {url}")
+        exit(1)
+    else:
+        print("No broken links found!")
+
+
+if __name__ == "__main__":
+    main()

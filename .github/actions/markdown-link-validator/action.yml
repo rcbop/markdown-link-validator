@@ -1,0 +1,18 @@
+name: "Markdown Link Validator"
+description: "A custom GitHub Action to validate links in Markdown files"
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.x"
+        cache: "pip"
+
+    - name: Install dependencies
+      run: pip install -r ${{ github.action_path }}/requirements.txt
+      shell: bash
+
+    - name: Run Markdown Link Validator
+      run: python ${{ github.action_path }}/main.py
+      shell: bash
