@@ -1,10 +1,10 @@
 name: Validate Markdown Links
 
-on: [push, pull_request]
+on: [pull_request]
 
 permissions:
   contents: read
-  pull-requests: write
+  issues: write
 
 jobs:
   link-check:
