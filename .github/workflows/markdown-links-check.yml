@@ -13,5 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Check if token works
+        run: |
+          echo "Testing GITHUB_TOKEN..."
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/user
+        shell: bash
+
       - name: Run Markdown Link Validator
         uses: ./.github/actions/markdown-link-validator
