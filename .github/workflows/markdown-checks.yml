@@ -7,20 +7,30 @@ permissions:
   issues: write
 
 jobs:
-  link-check:
+  debug-token:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Check if token works
         run: |
           echo "Testing GITHUB_TOKEN..."
           curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/user
         shell: bash
 
+  link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Run Markdown Link Validator
         uses: ./.github/actions/markdown-link-validator
+
+
+  check-style:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Run Markdown Linter and Style Checker
         uses: ./.github/actions/markdown-lint-stylecheck

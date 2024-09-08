@@ -33,6 +33,12 @@ jobs:
       - name: Run Markdown Link Validator
         uses: rcbop/markdown-link-validator-action@v1
 
+  check-style:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       # verify markdown style
       - name: Run Mardown Lint and style check
         uses: markdownlint/markdown-lint-stylecheck@v1
