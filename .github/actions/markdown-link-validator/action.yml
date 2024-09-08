@@ -1,5 +1,10 @@
 name: "Markdown Link Validator"
 description: "A custom GitHub Action to validate links in Markdown files"
+
+inputs:
+  token:
+    description: "GitHub Personal Access Token"
+
 runs:
   using: "composite"
   steps:
@@ -15,4 +20,7 @@ runs:
 
     - name: Run Markdown Link Validator
       run: python ${{ github.action_path }}/main.py
+      env:
+        PAT_TOKEN: ${{ inputs.token }}
       shell: bash
+

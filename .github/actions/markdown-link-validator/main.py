@@ -139,7 +139,9 @@ def main():
         if pr_number and pr_number.isdigit():
             repo = os.getenv('GITHUB_REPOSITORY')
             print(f"DEBUG: Repo is {repo}")
-            token = os.getenv('GITHUB_TOKEN')
+            token = os.getenv('PAT_TOKEN')
+            if not token:
+                token = os.getenv('GITHUB_TOKEN')
             comment_content = "## Markdown link validator action\n" \
                 f"### Broken Links Found\n{markdown_table}"
             post_comment_to_pr(token, repo, int(pr_number), comment_content)

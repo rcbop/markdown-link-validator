@@ -24,6 +24,8 @@ jobs:
 
       - name: Run Markdown Link Validator
         uses: ./.github/actions/markdown-link-validator
+        with:
+          token: ${{ secrets.PAT }}
 
 
   check-style:
