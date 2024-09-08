@@ -29,10 +29,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # verify broken links in markdown files
       - name: Run Markdown Link Validator
         uses: rcbop/markdown-link-validator-action@v1
+
+      # verify markdown style
+      - name: Run Mardown Lint and style check
+        uses: markdownlint/markdown-lint-stylecheck@v1
+        with:
+          glob_pattern: '**/*.md' # default value
 ```
 
 3. Commit and push the changes to your repository.
 
-Now, whenever a pull request is opened or synchronized, the markdown-link-validator action will be triggered. It will validate the contents of the Markdown file and check the links for any errors. A comment will be added to the pull request with the results of the validation.
+Now, whenever a pull request is opened or synchronized, the markdown-link-validator action will be triggered. It will validate the contents of the Markdown file and check the links for any errors. A comment will be added to the pull request with the results of the validation. The second step will verify the markdown style and structure.

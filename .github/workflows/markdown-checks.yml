@@ -21,3 +21,6 @@ jobs:
 
       - name: Run Markdown Link Validator
         uses: ./.github/actions/markdown-link-validator
+
+      - name: Run Markdown Linter and Style Checker
+        uses: ./.github/actions/markdown-lint-stylecheck

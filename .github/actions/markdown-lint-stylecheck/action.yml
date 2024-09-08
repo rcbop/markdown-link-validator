@@ -1,0 +1,14 @@
+name: "Markdown Linter and Style Checker"
+description: "Lint and check Markdown files for style issues using a Docker container"
+
+inputs:
+  glob_pattern:
+    description: "Glob pattern to specify the markdown files to lint"
+    required: false
+    default: "**/*.md"
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.glob_pattern }}
