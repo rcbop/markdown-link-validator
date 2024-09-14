@@ -57,13 +57,13 @@ def post_comment_to_pr(token: str, repo: str, pr_number: int, content: str):
     """
     url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
     headers = {
-        'Authorization': f'token {token}',
-        'Accept': 'Accept: application/vnd.github+json'
+        'Authorization': f'Bearer {token}',
+        'Accept': 'Accept: application/vnd.github.v3+json'
     }
     data = {
         'body': content
     }
-    response = requests.post(url, headers=headers, data=json.dumps(data))
+    response = requests.post(url, headers=headers, json=data)
     if response.status_code == http.HTTPStatus.CREATED:
         print("Comment posted successfully.")
     else:
