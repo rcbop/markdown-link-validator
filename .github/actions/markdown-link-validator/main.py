@@ -3,7 +3,6 @@ This script checks all markdown files in the repository,
 it exits with a non-zero status code if it's unable to parse the markdown files
 or if it finds any broken links.
 """
-import json
 import os
 from urllib.parse import urlparse
 
